@@ -6,7 +6,8 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.support.v7.app.AppCompatActivity;
-import android.widget.TextView;
+import android.view.View;
+import android.widget.Button;
 import android.widget.Toast;
 
 import com.example.fdh.contactsapi.utils.Constant;
@@ -20,7 +21,7 @@ public class MainActivity extends AppCompatActivity {
     private String name;
     private String mPhoneNumber;
 
-    private TextView mContacts;
+    private Button btn_exp;
 
     private StringBuffer output = new StringBuffer();
 
@@ -40,8 +41,11 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        mContacts = (TextView) findViewById(R.id.textView1);
-        getContactsAPI();
+        btn_exp = (Button) findViewById(R.id.btn_exp);
+    }
+
+    public void btn_Click(View v){
+        Toast.makeText(getApplicationContext(), "Test", Toast.LENGTH_SHORT).show();
     }
 
     public void getContactsAPI(){
@@ -68,8 +72,6 @@ public class MainActivity extends AppCompatActivity {
                     phoneCursor.close();
                 }
             }
-            mContacts.setText(output);
-            writeToFile();
         }
     }
 
