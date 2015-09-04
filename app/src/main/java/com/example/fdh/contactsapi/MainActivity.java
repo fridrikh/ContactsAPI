@@ -4,6 +4,7 @@ import android.content.ContentResolver;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.provider.ContactsContract;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
@@ -12,7 +13,9 @@ import android.widget.Toast;
 
 import com.example.fdh.contactsapi.utils.Constant;
 
+import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.OutputStreamWriter;
 
 public class MainActivity extends AppCompatActivity {
@@ -20,6 +23,7 @@ public class MainActivity extends AppCompatActivity {
     private String id;
     private String name;
     private String mPhoneNumber;
+    private String mFullPath;
 
     private Button btn_exp;
 
@@ -34,8 +38,6 @@ public class MainActivity extends AppCompatActivity {
     private Uri CONTENT_URI = ContactsContract.Contacts.CONTENT_URI;
     private Uri PHONE_CONTENT_URI = ContactsContract.CommonDataKinds.Phone.CONTENT_URI;
 
-    private FileOutputStream fileOut;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,7 +47,15 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void btn_Click(View v){
-        Toast.makeText(getApplicationContext(), "Test", Toast.LENGTH_SHORT).show();
+        getContactsAPI();
+
+        mFullPath = Constant.ROOT_DIRECTORY
+                + "/" + Constant.FOLDER_DIRECTORY
+                + "/" + Constant.FILE_NAME_TXT;
+        if (isExternalStorageWritable())
+        {
+            SaveFile(mFullPath, output.toString());
+        }
     }
 
     public void getContactsAPI(){
@@ -75,16 +85,39 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public void writeToFile(){
-        try {
-            fileOut = openFileOutput(Constant.FILE_NAME_TXT, MODE_PRIVATE);
-            OutputStreamWriter outputWriter = new OutputStreamWriter(fileOut);
-            outputWriter.write(output.toString());
-            outputWriter.close();
 
-            Toast.makeText(getBaseContext(), "Файл создан!",Toast.LENGTH_SHORT).show();
-        } catch (Exception e) {
+    public boolean isExternalStorageWritable()
+    {
+        String state = Environment.getExternalStorageState();
+        if (Environment.MEDIA_MOUNTED.equals(state))
+        {
+            return true;
+        }
+        return false;
+    }
+
+    public void SaveFile (String filePath, String FileContent)
+    {
+        File fhandle = new File(filePath);
+        try
+        {
+            if (!fhandle.getParentFile().exists())
+                fhandle.getParentFile().mkdirs();
+            fhandle.delete();
+            fhandle.createNewFile();
+            FileOutputStream fOut = new FileOutputStream(fhandle);
+            OutputStreamWriter myOutWriter = new OutputStreamWriter(fOut);
+            myOutWriter.write(FileContent);
+            myOutWriter.close();
+            fOut.close();
+            Toast.makeText(getApplicationContext(), "Контакты экспортированы", Toast.LENGTH_SHORT).show();
+        }
+        catch (IOException e)
+        {
             e.printStackTrace();
+            Toast.makeText(getApplicationContext(), "Произошла ошибка при записи файла", Toast.LENGTH_SHORT).show();
         }
     }
+
+
 }
