@@ -11,6 +11,7 @@ import android.provider.ContactsContract;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
 
 import com.example.fdh.contactsapi.utils.Constant;
 
@@ -29,6 +30,8 @@ public class MainActivity extends AppCompatActivity {
 
     private Button btn_exp;
 
+    private TextView textView_path;
+
     private StringBuffer output = new StringBuffer();
 
     private String _ID = ContactsContract.Contacts._ID;
@@ -46,7 +49,11 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
         btn_exp = (Button) findViewById(R.id.btn_exp);
+
+        textView_path = (TextView) findViewById(R.id.textView_path);
+        textView_path.setText("Путь к файлам: \n" + Constant.ROOT_DIRECTORY + Constant.FOLDER_DIRECTORY);
     }
 
     public void btn_Click(View v){
@@ -69,6 +76,7 @@ public class MainActivity extends AppCompatActivity {
         if (isExternalStorageWritable()) {
             try{
                 SaveFileTxt(Constant.mPathTxt, getContactsTxt());
+                output.setLength(0);
                 SaveFileVcf(Constant.mPathVcf);
             } catch(Exception e){
                 e.printStackTrace();
