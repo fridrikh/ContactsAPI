@@ -1,5 +1,6 @@
 package com.example.fdh.contactsapi;
 
+import android.app.ProgressDialog;
 import android.content.ContentResolver;
 import android.content.res.AssetFileDescriptor;
 import android.database.Cursor;
@@ -10,7 +11,6 @@ import android.provider.ContactsContract;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
-import android.widget.Toast;
 
 import com.example.fdh.contactsapi.utils.Constant;
 
@@ -50,15 +50,29 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void btn_Click(View v){
+        final ProgressDialog progressDialog = ProgressDialog.show(this, "Пожалуйста, подождите", "Экспортируем...", true);
+        progressDialog.setCancelable(false);
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try{
+                    exportContacts();
+                } catch (Exception e){
+                    e.printStackTrace();
+                }
+                progressDialog.dismiss();
+            }
+        }).start();
+    }
+
+    public void exportContacts(){
         if (isExternalStorageWritable()) {
             try{
                 SaveFileTxt(Constant.mPathTxt, getContactsTxt());
                 SaveFileVcf(Constant.mPathVcf);
-                Toast.makeText(getApplicationContext(), "Файлы созданы", Toast.LENGTH_SHORT).show();
             } catch(Exception e){
-                Toast.makeText(getApplicationContext(), "Ошибка", Toast.LENGTH_SHORT).show();
+                e.printStackTrace();
             }
-
         }
     }
 
